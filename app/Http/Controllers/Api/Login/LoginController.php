@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Laravel\Passport\Client;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -109,4 +110,43 @@ class LoginController extends Controller
 
 
     }
+
+    public function register(Request $request)
+    {
+        $validator=\Validator::make($request->all(),[
+            'name' => 'required|min:1|max:75',
+    		'last_name' => 'required|min:1|max:75',
+    		'phone' => 'required|numeric',
+    		'address' => 'required',
+    		'dni' => 'required|max:11',
+    		'email' => 'required|unique:users,email',
+    		'password' => 'required|min:6',
+    		#'role_id' => 'required|numeric',
+
+        ]);
+
+        if($validator->fails())
+        {
+
+          return response()->json( $errors=$validator->errors()->all(), 400);
+        }
+
+        $user = User::create([
+            'name' => request('name'),
+            'last_name' => request('last_name'),
+            'phone' => request('phone'),
+            'address' => request('address'),
+            'dni' => request('dni'),
+            'email' => request('email'),
+            'password' => bcrypt(request('password')),
+            'role_id' => 2,
+            'category' => 'registered',
+            'state_id' => 1,
+        ]);
+
+        return response()->json(['response' => 'Registro exitoso'], 200);
+
+
+    }
+
 }

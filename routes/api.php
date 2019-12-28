@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 Route::post('login', 'Api\Login\LoginController@login');
+Route::post('register', 'Api\Login\LoginController@register');
 
 Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('song', 'Api\Song\SongController');
