@@ -39,14 +39,12 @@ class SongController extends Controller
     public function store(Request $request)
     {
         $validator=\Validator::make($request->all(),[
-            /*'name' => 'required|min:1|max:75',
-    		'last_name' => 'required|min:1|max:75',
-    		'phone' => 'required|numeric',
-    		'address' => 'required',
-    		'dni' => 'required|max:11',
-    		'email' => 'required|unique:users,email',
-    		'password' => 'required|min:6',*/
-    		#'role_id' => 'required|numeric',
+            'name' => 'required|min:1|max:75',
+    		'description' => 'required|min:1|max:75',
+    		'data' => 'required|numeric',
+    		'image' => 'required',
+    		'state_id' => 'required|numeric',
+    		'allow_to' => 'required|max:11'
 
         ]);
 
@@ -96,7 +94,40 @@ class SongController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator=\Validator::make($request->all(),[
+            'name' => 'required|min:1|max:75',
+    		'description' => 'required|min:1|max:75',
+    		'data' => 'required|numeric',
+    		'image' => 'required',
+    		'state_id' => 'required|numeric',
+    		'allow_to' => 'required|max:11'
+
+        ]);
+
+        if($validator->fails())
+        {
+
+          return response()->json( $errors=$validator->errors()->all(), 400);
+        }
+
+        $song = Song::find($id);
+
+        if(!$song){
+            return response()->json(['response' => ['error' ['Canción no encontrada.']]], 400);
+        }
+
+        $song->name = request('name');
+        $song->description = request('description');
+        $song->data = request('data');
+        $song->image = request('image');
+        $song->state_id = request('state_id');
+        $song->allow_to = request('allow_to');
+        $song->update();
+
+        return response()->json(['response' => 'Operación excitosa.'], 200);
+
+
+
     }
 
     /**
