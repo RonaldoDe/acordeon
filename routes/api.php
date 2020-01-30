@@ -19,5 +19,6 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('song', 'Api\Song\SongController');
     Route::apiResource('category', 'Api\Other\CategoryController');
     Route::get('song_state', 'Api\Other\FreeListController@songState');
+    Route::apiResource('song_category', 'Api\Other\SongCategoryController');
 });
 

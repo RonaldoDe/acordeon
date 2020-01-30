@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api\Other;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
-class SongRatingController extends Controller
+use App\Model\SongCategory;
+class SongCategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +14,7 @@ class SongRatingController extends Controller
      */
     public function index()
     {
-        //
+        
     }
 
     /**
@@ -27,7 +27,7 @@ class SongRatingController extends Controller
     {
         $validator=\Validator::make($request->all(),[
             'song_id' => 'required|numeric|exists:song,id',
-            'rating' => 'required|numeric',
+            'category_id' => 'required|numeric|exists:category,id',
         ]);
 
         if($validator->fails())
@@ -35,7 +35,9 @@ class SongRatingController extends Controller
           return response()->json( $errors=$validator->errors()->all(), 400);
         }
 
-        $rating = SongCategory::create([
+        $song_category = SongCategory::max('order_by');
+
+        $song = SongCategory::create([
             'song_id' => request('song_id'),
             'category_id' => request('category_id'),
             'order_by' => $song_category,

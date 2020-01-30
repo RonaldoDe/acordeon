@@ -12,7 +12,7 @@ class FreeListController extends Controller
     {
         $state = SongState::get();
 
-
         return response()->json(['response' => $state], 200);
     }
+
 }

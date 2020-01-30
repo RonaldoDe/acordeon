@@ -25,6 +25,7 @@ class SongController extends Controller
             ->get();
         }else{
             $songs = Song::whereIn('allow_to', ['free'])
+            ->category(request('category_id'))
             ->get();
         }
 
