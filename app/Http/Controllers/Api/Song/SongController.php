@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Song;
 
 use App\Http\Controllers\Controller;
 use App\Model\Song\Song;
+use App\Model\SongRating;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,11 +21,30 @@ class SongController extends Controller
         $user = User::find(Auth::id());
         if($user->category == 'registered'){
             $songs = Song::whereIn('allow_to', ['free', 'premiun'])
+            ->category(request('category_id'))
             ->get();
         }else{
             $songs = Song::whereIn('allow_to', ['free'])
             ->get();
         }
+
+        foreach ($songs as $song) {
+            $prom = 0;
+            $rating = SongRating::select('song_rating.rating')
+            ->join('song as s', 'song_rating.song_id', 's.id')
+            ->where('s.id', $song->id)
+            ->get();
+
+            $total = collect($rating)->sum('rating');
+
+            if(count($rating) > 0){
+                $prom = $total / count($rating);
+            }
+
+            $song->rating = $prom;
+
+        }
+
 
 
         return response()->json(['response' => $songs], 200);
