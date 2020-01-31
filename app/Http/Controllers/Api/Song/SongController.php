@@ -11,6 +11,16 @@ use Illuminate\Support\Facades\Auth;
 
 class SongController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('permission:/song,per_show')->only(['show', 'index']);
+        $this->middleware('permission:/song,per_create')->only('store');
+        $this->middleware('permission:/song,per_update')->only('update');
+        $this->middleware('permission:/song,per_delete')->only('delete');
+        $this->middleware('permission:/activated_song,per_create')->only('activatedSong');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -61,18 +71,24 @@ class SongController extends Controller
     {
         $validator=\Validator::make($request->all(),[
             'name' => 'required|min:1|max:75',
-    		'description' => 'required|min:1|max:75',
-    		'data' => 'required|numeric',
-    		'image' => 'required',
-    		'state_id' => 'required|numeric',
-    		'allow_to' => 'required|max:11'
-
+        		'description' => 'required|min:1|max:75',
+        		'data' => 'required|numeric',
+        		'image' => 'required',
+        		'allow_to' => 'bail'
         ]);
 
         if($validator->fails())
         {
 
           return response()->json( $errors=$validator->errors()->all(), 400);
+        }
+
+        $user = User::find(Auth::id());
+
+        if($user->role_id == 1){
+          $allow_to = request('allow_to');
+        }else if($user->role_id == 2){
+          $allow_to = 'free';
         }
 
         $last = Song::max('order_by');
@@ -84,8 +100,8 @@ class SongController extends Controller
             'name' => request('name'),
             'description' => request('description'),
             'image' => request('image'),
-            'state_id' => request('state_id'),
-            'allow_to' => request('allow_to'),
+            'state_id' => 3,
+            'allow_to' => $allow_to,
         ]);
 
         return response()->json(['response' => 'Operación exitosa.'], 200);
@@ -169,5 +185,27 @@ class SongController extends Controller
         $song->update();
 
         return response()->json(['response' => 'Canción eliminada'], 200);
+    }
+
+    public function activatedSong(Request $request ,$id){
+      $validator=\Validator::make($request->all(),[
+          'state_id' => 'required|numeric'
+        ]);
+
+        if($validator->fails())
+        {
+          return response()->json( $errors=$validator->errors()->all(), 400);
+        }
+      $song = Song::find($id);
+
+      if(!$song){
+          return response()->json(['response' => 'Canción no encontrada'], 400);
+      }
+
+      $song->state_id = request('state_id');
+      $song->update();
+
+      return response()->json(['response' => 'Estado cambiado'], 200);
+
     }
 }
