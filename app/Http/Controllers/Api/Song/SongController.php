@@ -72,8 +72,10 @@ class SongController extends Controller
         $validator=\Validator::make($request->all(),[
             'name' => 'required|min:1|max:75',
         		'description' => 'required|min:1|max:75',
-        		'data' => 'required|numeric',
-        		'image' => 'required',
+        		'song' => 'required|numeric',
+            'image' => 'required',
+            'register' => 'required|integer',
+        		'keys_amount' => 'required|integer',
         		'allow_to' => 'bail'
         ]);
 
@@ -94,12 +96,14 @@ class SongController extends Controller
         $last = Song::max('order_by');
 
         $song = Song::create([
-            'data' => request('data'),
+            'song' => request('data'),
             'created_by' => Auth::id(),
             'order_by' => $last + 1,
             'name' => request('name'),
             'description' => request('description'),
             'image' => request('image'),
+            'register' => request('register'),
+            'keys_amount' => request('keys_amount'),
             'state_id' => 3,
             'allow_to' => $allow_to,
         ]);
