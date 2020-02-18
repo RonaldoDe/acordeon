@@ -120,7 +120,8 @@ class LoginController extends Controller
     		'address' => 'required',
     		'dni' => 'required|max:11',
     		'email' => 'required|unique:users,email',
-    		'password' => 'required|min:6',
+            'password' => 'required|min:6',
+    		'register' => 'required',
     		#'role_id' => 'required|numeric',
 
         ]);
@@ -140,7 +141,7 @@ class LoginController extends Controller
             'email' => request('email'),
             'password' => bcrypt(request('password')),
             'role_id' => 2,
-            'category' => 'registered',
+            'category' => request('register'),
             'state_id' => 1,
         ]);
 
